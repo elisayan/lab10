@@ -3,6 +3,7 @@ package it.unibo.oop.lab.lambda;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -85,15 +86,14 @@ public final class LambdaUtilities {
          * Suggestion: consider Map.merge
          */
         Map<R, Set<T>> map = new LinkedHashMap<>();
-        // for (T t : list) {
-        //     final R key = op.apply(t);
-        //     map.merge(key, Set.of(t), (previousSet, newSet) -> {
-        //         final var mergedSet = new LinkedHashMap<>();
-        //         mergedSet.addAll(newSet);
-        //         return mergedSet;
-        //     });
-            
-        // }
+        list.forEach(t -> {
+            final R key = op.apply(t);
+            map.merge(key, Set.of(t), (previousSet, newSet) -> {
+                final Set<T> mergedSet = new LinkedHashSet<>(previousSet);
+                mergedSet.addAll(newSet);
+                return mergedSet;
+            });
+        });
         return map;
     }
 
