@@ -115,7 +115,13 @@ public final class LambdaUtilities {
          *
          * Keep in mind that a map can be iterated through its forEach method
          */
-        return null;
+        Map<K,V> result = new LinkedHashMap<>();
+        for (Map.Entry<K,Optional<V>> entry : map.entrySet()) {
+            K key = entry.getKey();
+            V value = entry.getValue().orElse(def.get());
+            result.put(key, value);
+        }
+        return result;
     }
 
     /**
