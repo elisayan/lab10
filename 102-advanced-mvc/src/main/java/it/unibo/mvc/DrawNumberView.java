@@ -20,6 +20,8 @@ public interface DrawNumberView {
      */
     void numberIncorrect();
 
+    void displayError(String message);
+
     /**
      * @param res the result of the last draw
      */
