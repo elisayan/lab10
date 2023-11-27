@@ -64,9 +64,7 @@ public final class LambdaUtilities {
          * Suggestion: consider Optional.filter
          */
         List<Optional<T>> listOutput = new LinkedList<>();
-        for (T element : list) {
-            listOutput.add(Optional.ofNullable(element).filter(pre));
-        }
+        list.forEach(element -> listOutput.add(Optional.ofNullable(element).filter(pre)));
         return listOutput;
     }
 
