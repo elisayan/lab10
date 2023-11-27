@@ -2,7 +2,6 @@ package it.unibo.oop.lab.lambda;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,15 +64,9 @@ public final class LambdaUtilities {
          * Suggestion: consider Optional.filter
          */
         List<Optional<T>> listOutput = new LinkedList<>();
-        // list.forEach(element -> {
-        //     Optional<T> optional = Optional.of(element);
-        //     optional.filter(pre);
-        //     if (pre != null) {
-        //         listOutput.add(optional);
-        //     } else {
-        //         listOutput.add(Optional.empty());
-        //     }
-        // });
+        for (T element : list) {
+            listOutput.add(Optional.ofNullable(element).filter(pre));
+        }
         return listOutput;
     }
 
