@@ -1,15 +1,19 @@
 package it.unibo.mvc;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  */
 public final class DrawNumberApp implements DrawNumberViewObserver {
-    private static final int MIN = 0;
-    private static final int MAX = 100;
-    private static final int ATTEMPTS = 10;
+    
+    private static final String FILE_NAME = "src/main/resources/config.yml";
 
     private final DrawNumber model;
     private final List<DrawNumberView> views;
@@ -17,8 +21,9 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
     /**
      * @param views
      *            the views to attach
+     * @throws IOException
      */
-    public DrawNumberApp(final DrawNumberView... views) {
+    public DrawNumberApp(final DrawNumberView... views) throws FileNotFoundException, IOException {
         /*
          * Side-effect proof
          */
@@ -27,7 +32,28 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
             view.setObserver(this);
             view.start();
         }
-        this.model = new DrawNumberImpl(MIN, MAX, ATTEMPTS);
+        Map<String, Integer> map = new LinkedHashMap<>();
+        try (final BufferedReader r = new BufferedReader(new FileReader(FILE_NAME));) {
+            String line;
+            while ((line = r.readLine()) != null){
+                String[] part = line.split(":");
+                String key = part[0].trim();
+                int value = Integer.parseInt(part[1].trim());    
+                map.put(key, value);
+            }
+                
+            
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+            displayError(e.getMessage());
+        }
+        this.model = new DrawNumberImpl(map.get("minimum"), map.get("maximum"), map.get("attempts"));
+    }
+
+    private void displayError(final String err) {
+        for (final DrawNumberView view: views) {
+            view.displayError(err);
+        }
     }
 
     @Override
@@ -63,10 +89,12 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
     /**
      * @param args
      *            ignored
-     * @throws FileNotFoundException 
+     * @throws IOException
      */
-    public static void main(final String... args) throws FileNotFoundException {
-        new DrawNumberApp(new DrawNumberViewImpl());
+    public static void main(final String... args) throws FileNotFoundException, IOException {
+        new DrawNumberApp(new DrawNumberViewImpl(), new DrawNumberViewImpl(),
+                new PrintStreamView(System.out),
+                new PrintStreamView("output.log"));
     }
 
 }
